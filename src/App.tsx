@@ -8,7 +8,9 @@ import './App.css';
  */
 interface IState {
   data: ServerRespond[],
-  showGraph: boolean,
+  showGraph: boolean, // We want to have 1: data to plot, and 2:
+                      // the ability to turn the graph on and off.
+                      // Both are required properties of this interface.
 }
 
 /**
@@ -23,7 +25,9 @@ class App extends Component<{}, IState> {
       // data saves the server responds.
       // We use this state to parse data down to the child element (Graph) as element property
       data: [],
-      showGraph: false
+      showGraph: false //Here we set the graph to not show up until we press the show graph button.
+                       //This makes sense, since a trader would like to interact with the website
+                       //by, say, pressing buttons.
     };
   }
 
@@ -32,7 +36,8 @@ class App extends Component<{}, IState> {
    */
   renderGraph() {
     if (this.state.showGraph) {
-      return (<Graph data={this.state.data}/>)
+      return (<Graph data={this.state.data}/>) // This condition ensures that the graph only shows when the
+                                               // button is pressed by the trader.
     }
   }
 
@@ -40,17 +45,18 @@ class App extends Component<{}, IState> {
    * Get new data from server and update the state with the new data
    */
   getDataFromServer() {
-    let x = 0;
+    let x = 0; //this keeps track of time
     const interval = setInterval(() => {
       DataStreamer.getData((serverResponds: ServerRespond[]) => {
         this.setState({
-        data: serverResponds,
-        showGraph: true,
-        });
+        data: serverResponds,    // we tell the computer: 'Hey, please plot the data from serverResponds!'
+        showGraph: true,         // this switches the state of the graph from 'off' to 'on'
+        }); // the previous two are simply the requirements of the interface called IState.
       });
-      x++;
+      x++; // with every time we run this, time increases
       if (x>1000) {
-        clearInterval(interval)
+        clearInterval(interval) // we update the data that the graph shows every 1000 iterations, while
+                                // keeping it continuous
       }
     }, 100);
   }

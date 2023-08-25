@@ -16,7 +16,7 @@ interface IProps {
  */
 interface PerspectiveViewerElement extends HTMLElement {
   load: (table: Table) => void,
-}
+} // we defined an interface called PerspectiveViewerElement that behaves like a HTMLelement.
 
 /**
  * React component that renders Perspective based on data
@@ -39,7 +39,8 @@ class Graph extends Component<IProps, {}> {
       top_ask_price: 'float',
       top_bid_price: 'float',
       timestamp: 'date',
-    };
+    }; // this is what we plot, at these specific timestamps. This way the trader will see the name of the stock
+       // and the time at which th stock was at that top_ask_price.
 
     if (window.perspective && window.perspective.worker()) {
       this.table = window.perspective.worker().table(schema);
@@ -49,15 +50,18 @@ class Graph extends Component<IProps, {}> {
 
       // Add more Perspective configurations here.
       elem.load(this.table);
-      elem.setAttribute('view', 'y_line');
-      elem.setAttribute('column-pivots', '["stock"]');
-      elem.setAttribute('row-pivots', '["timestamp"]');
-      elem.setAttribute('columns','["top_ask_price"]');
+      elem.setAttribute('view', 'y_line'); // create a y-line plot (x-y graph in maths terms)
+      elem.setAttribute('column-pivots', '["stock"]'); // this says: "data attributed to different stock names should be treated separately"
+                                                       // the above makes sense, since we want to see the top_ask_price for different stocks,
+                                                       // so it would be really inconvenient if we plotted it as just one graph.
+
+      elem.setAttribute('row-pivots', '["timestamp"]'); // this says "the x-axis represents time (i.e. the timestamps.)."
+      elem.setAttribute('columns','["top_ask_price"]'); // this says "Plot only the top_ask_price, we don't care about anything else."
       elem.setAttribute('aggregates',`
       {"stock":"distinct count",
       "top_ask_price":"avg",
       "top_bid_price":"avg",
-      "timestamp":"distinct count"}`);
+      "timestamp":"distinct count"}`); // this handles duplicates over the same timestamp by taking an average
     }
   }
 
